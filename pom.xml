@@ -129,7 +129,7 @@
                                       executable="/bin/sh"
                                       failonerror="true">
                                     <arg value="-c"/>
-                                    <arg value="docker build --tag ${docker.image.repo}:${docker.image.version} ."/>
+                                    <arg value="docker build --tag ${docker.registry.namespace}/${docker.image.repo}:${docker.image.version} ."/>
                                 </exec>
                             </target>
                         </configuration>
