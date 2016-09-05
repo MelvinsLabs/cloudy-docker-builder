@@ -21,7 +21,7 @@ RUN mkdir app
 WORKDIR /opt/app
 
 # Copy WS JAR
-COPY ${docker.service.name}.jar /opt/app/${docker.service.name}.jar
+COPY ${service.artifactId}.jar /opt/app/${service.artifactId}.jar
 
 # Expose Ports
 # 8181 : WS Endpoint
