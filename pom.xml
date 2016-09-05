@@ -1,0 +1,162 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.melvins.labs</groupId>
+    <artifactId>docker-image-builder</artifactId>
+    <version>1.0.0.${BUILD_NUMBER}</version>
+    <packaging>pom</packaging>
+
+    <name>Docker Image Builder</name>
+    <description>This is a Sample WebApp to demonstrate AWS SDK usage.</description>
+
+    <developers>
+        <developer>
+            <name>Mels</name>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- Project Specific Settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- WS Specific Settings -->
+        <service.groupId>junit</service.groupId>
+        <service.artifactId>junit</service.artifactId>
+        <service.version>4.12</service.version>
+
+        <!-- Docker Specific Settings -->
+        <docker.build.dir>${project.basedir}/docker-build</docker.build.dir>
+        <docker.registry.namespace></docker.registry.namespace>
+        <docker.image.repo>${service.artifactId}</docker.image.repo>
+        <docker.image.version>${service.version}</docker.image.version>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <!-- Copy WS Dependencies For Docker Image Build -->
+                    <execution>
+                        <id>copy-image-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.build.dir}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${service.groupId}</groupId>
+                                    <artifactId>${service.artifactId}</artifactId>
+                                    <version>${service.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+
+                    <!-- Prepare The Dockerfile For Docker Image Build -->
+                    <execution>
+                        <id>copy-docker-file</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.build.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <includes>
+                                        <include>Dockerfile</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <!-- Prepare The Starter Script For Docker Image -->
+                    <execution>
+                        <id>copy-starter-script</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.build.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <includes>
+                                        <include>starter.sh</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="build-docker-image">
+                                <echo message="Initiating Build Docker Image For WS ${service.groupId}:${service.artifactId}:${service.version}"/>
+                                <exec dir="${docker.build.dir}"
+                                      executable="/bin/sh"
+                                      failonerror="true">
+                                    <arg value="-c"/>
+                                    <arg value="docker build --tag ${docker.image.repo}:${docker.image.version} ."/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>push-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="push-docker-image">
+                                <echo message="Initiating Push Docker Image For ${docker.image.repo}:${docker.image.version}"/>
+                                <exec dir="${docker.build.dir}"
+                                      executable="/bin/sh"
+                                      failonerror="true">
+                                    <arg value="-c"/>
+                                    <arg value="docker push ${docker.registry.namespace}/${docker.image.repo}:${docker.image.version}"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
