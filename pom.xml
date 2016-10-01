@@ -22,9 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- WS Specific Settings -->
-        <service.groupId>junit</service.groupId>
-        <service.artifactId>junit</service.artifactId>
-        <service.version>4.12</service.version>
+        <service.groupId></service.groupId>
+        <service.artifactId></service.artifactId>
+        <service.version></service.version>
 
         <!-- Docker Specific Settings -->
         <docker.build.dir>${project.basedir}/docker-build</docker.build.dir>
