@@ -57,6 +57,7 @@
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>
+							<localRepositoryDirectory>/root/.m2/repository</localRepositoryDirectory>
                         </configuration>
                     </execution>
                 </executions>
