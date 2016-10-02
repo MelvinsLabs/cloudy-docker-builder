@@ -5,11 +5,11 @@
 
     <groupId>me.melvins.labs</groupId>
     <artifactId>docker-image-builder</artifactId>
-    <version>1.0.0.${BUILD_NUMBER}</version>
+    <version>1.0.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Docker Image Builder</name>
-    <description>This is a Sample WebApp to demonstrate AWS SDK usage.</description>
+    <name>Platform Docker Image Builder</name>
+    <description>This is a POM for Docker Image Build</description>
 
     <developers>
         <developer>
